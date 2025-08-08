@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>WigWag Training — Document Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:1000px;margin:2rem auto;padding:0 1rem;line-height:1.5}
+    header{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+    h1{margin:0}
+    .search{margin:1rem 0}
+    input{width:100%;padding:.6rem;font-size:1rem}
+    ul{list-style:none;padding:0;margin:1rem 0}
+    li{padding:.4rem 0;border-bottom:1px solid #eee}
+    .muted{color:#666;font-size:.9rem}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WigWag Training — Document Library</h1>
+    <a href="https://wigwagtraining.com" target="_blank" rel="noopener">Go to wigwagtraining.com →</a>
+  </header>
+
+  <p class="muted">Click a document to open. You can add <code>#page=5</code> (or any page) to jump directly to a page.</p>
+
+  <div class="search">
+    <input id="q" type="search" placeholder="Filter by filename or folder…" />
+  </div>
+
+  <div id="status">Loading…</div>
+  <ul id="list"></ul>
+
+  <script>
+    // 🔧 EDIT THESE THREE:
+    const OWNER = "YOUR_GITHUB_USERNAME_OR_ORG";
+    const REPO  = "YOUR_REPOSITORY_NAME";
+    const BRANCH = "main"; // or "master"
+
+    // Uses Git Trees API to get *all* paths in one request (recursive)
+    // https://docs.github.com/en/rest/git/trees
+    const api = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+
+    function niceName(path){
+      return path.split('/').pop().replace(/[-_]+/g,' ').replace(/\.pdf$/i,'');
+    }
+
+    fetch(api).then(r => r.json()).then(data => {
+      const status = document.getElementById('status');
+      const list = document.getElementById('list');
+      if(!data.tree){ status.textContent = "No files found."; return; }
+
+      // pick PDFs
+      const pdfs = data.tree
+        .filter(n => n.type === "blob" && /\.pdf$/i.test(n.path))
+        .map(n => ({
+          path: n.path,
+          url: `${location.origin}/${REPO}/${n.path}`, // works on GitHub Pages
+          name: niceName(n.path),
+          folder: n.path.includes('/') ? n.path.substring(0, n.path.lastIndexOf('/')) : ''
+        }))
+        .sort((a,b) => a.path.localeCompare(b.path));
+
+      status.textContent = `${pdfs.length} PDF(s)`;
+      const frag = document.createDocumentFragment();
+      pdfs.forEach(f => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <a href="${f.url}" target="_blank" rel="noopener">${f.name}</a>
+          <div class="muted">${f.path}</div>
+        `;
+        frag.appendChild(li);
+      });
+      list.appendChild(frag);
+
+      // simple filter
+      document.getElementById('q').addEventListener('input', e => {
+        const term = e.target.value.toLowerCase();
+        [...list.children].forEach(li => {
+          li.style.display = li.textContent.toLowerCase().includes(term) ? "" : "none";
+        });
+      });
+    }).catch(err => {
+      document.getElementById('status').textContent = "Error loading file list.";
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
