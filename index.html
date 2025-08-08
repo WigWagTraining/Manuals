@@ -2,86 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>WigWag Training — Document Library</title>
+  <title>WigWag Training — Manuals</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- ==== THEME: tweak these to match wigwagtraining.com ==== -->
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:1000px;margin:2rem auto;padding:0 1rem;line-height:1.5}
-    header{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
-    h1{margin:0}
-    .search{margin:1rem 0}
-    input{width:100%;padding:.6rem;font-size:1rem}
-    ul{list-style:none;padding:0;margin:1rem 0}
-    li{padding:.4rem 0;border-bottom:1px solid #eee}
-    .muted{color:#666;font-size:.9rem}
+    :root{
+      --bg:#0f1115;          /* page background */
+      --panel:#151923;       /* cards / sections */
+      --panel-2:#10131b;     /* header/search bar bg */
+      --text:#eef2ff;        /* primary text */
+      --muted:#aab1c5;       /* secondary text */
+      --brand:#22c55e;       /* accent / buttons */
+      --brand-2:#16a34a;     /* button hover */
+      --link:#93c5fd;        /* links */
+      --border:#1f2431;      /* subtle borders */
+      --radius:16px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f7f8fb; --panel:#ffffff; --panel-2:#ffffff;
+        --text:#0f172a; --muted:#475569; --link:#1d4ed8;
+        --border:#e5e7eb; --brand:#16a34a; --brand-2:#15803d;
+      }
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:0 auto;padding:32px 16px}
+    header{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand img{height:40px;width:auto;border-radius:8px}
+    h1{font-size:clamp(20px,3vw,28px);margin:0}
+    .top-links a{color:var(--link);text-decoration:none;font-weight:600}
+    .card{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px}
+    .search{display:flex;gap:10px;align-items:center;margin:14px 0}
+    .search input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text)}
+    .search .toggle{display:flex;gap:8px;align-items:center}
+    .pill{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:14px}
+    .muted{color:var(--muted)}
+    .section{margin-top:22px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+    .section h2{margin:0;padding:12px 16px;background:var(--panel);font-size:16px;border-bottom:1px solid var(--border)}
+    .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:12px}
+    .file{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
+    .file a{color:var(--text);text-decoration:none;font-weight:600}
+    .file small{color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .btn{cursor:pointer;border:none;border-radius:10px;padding:8px 10px;background:var(--brand);color:white;font-weight:600}
+    .btn:hover{background:var(--brand-2)}
+    .copy-ok{font-size:12px;color:var(--muted)}
+    footer{margin:32px 0 12px;color:var(--muted);font-size:13px;text-align:center}
   </style>
 </head>
 <body>
-  <header>
-    <h1>WigWag Training — Document Library</h1>
-    <a href="https://wigwagtraining.com" target="_blank" rel="noopener">Go to wigwagtraining.com →</a>
-  </header>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <!-- Optional logo: replace src with your logo URL or remove this <img> -->
+        <!-- <img src="https://wigwagtraining.com/path-to-your-logo.png" alt="WigWag logo"> -->
+        <h1>WigWag Training — Manuals</h1>
+      </div>
+      <div class="top-links">
+        <a href="https://wigwagtraining.com" target="_blank" rel="noopener">Back to wigwagtraining.com →</a>
+      </div>
+    </header>
 
-  <p class="muted">Click a document to open. You can add <code>#page=5</code> (or any page) to jump directly to a page.</p>
+    <div class="card">
+      <div class="search">
+        <input id="q" type="search" placeholder="Search manuals by name or folder…" autocomplete="off" />
+        <span class="pill"><span id="count">0</span> PDFs</span>
+      </div>
+      <div class="muted" style="padding-inline:2px">
+        Tip: Use the “Copy link” button to copy a link with <code>#page=…</code> (we’ll ask for a page number).
+      </div>
+    </div>
 
-  <div class="search">
-    <input id="q" type="search" placeholder="Filter by filename or folder…" />
+    <div id="content"></div>
+
+    <footer>© <span id="year"></span> WigWag Training</footer>
   </div>
 
-  <div id="status">Loading…</div>
-  <ul id="list"></ul>
-
   <script>
-    // 🔧 EDIT THESE THREE:
-    const OWNER = "WigWag Training";
-    const REPO  = "Manuals";
-    const BRANCH = "main"; // or "master"
+    // ====== EDIT THESE ======
+    const OWNER  = "WigWag Training";
+    const REPO   = "Manuals";
+    const BRANCH = "main"; // change to "master" if needed
+    // ========================
 
-    // Uses Git Trees API to get *all* paths in one request (recursive)
-    // https://docs.github.com/en/rest/git/trees
-    const api = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+    const API  = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+    const BASE = location.origin + location.pathname.replace(/\/$/, "");
 
-    function niceName(path){
-      return path.split('/').pop().replace(/[-_]+/g,' ').replace(/\.pdf$/i,'');
+    const content = document.getElementById("content");
+    const countEl = document.getElementById("count");
+    const yearEl  = document.getElementById("year");
+    yearEl.textContent = new Date().getFullYear();
+
+    function groupByFolder(paths) {
+      const map = new Map();
+      for (const f of paths) {
+        const folder = f.path.includes("/") ? f.path.split("/").slice(0, -1).join("/") : "(root)";
+        if (!map.has(folder)) map.set(folder, []);
+        map.get(folder).push(f);
+      }
+      return map;
     }
 
-    fetch(api).then(r => r.json()).then(data => {
-      const status = document.getElementById('status');
-      const list = document.getElementById('list');
-      if(!data.tree){ status.textContent = "No files found."; return; }
+    function createSection(folder, files) {
+      const sec = document.createElement("section");
+      sec.className = "section";
+      const h2 = document.createElement("h2");
+      h2.textContent = folder;
+      sec.appendChild(h2);
 
-      // pick PDFs
+      const grid = document.createElement("div");
+      grid.className = "files";
+
+      files.forEach(file => {
+        const card = document.createElement("div");
+        card.className = "file";
+
+        const title = document.createElement("a");
+        title.href = file.url;
+        title.target = "_blank";
+        title.rel = "noopener";
+        title.textContent = file.name;
+
+        const meta = document.createElement("small");
+        meta.textContent = file.path;
+
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "btn";
+        copyBtn.textContent = "Copy link";
+        const ok = document.createElement("span");
+        ok.className = "copy-ok";
+        ok.textContent = "";
+
+        copyBtn.addEventListener("click", async () => {
+          const p = prompt("Page number to jump to?", "2");
+          if (!p) return;
+          const cacheBust = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+          const link = `${file.url}?v=${cacheBust}#page=${encodeURIComponent(p)}&view=FitH`;
+          try {
+            await navigator.clipboard.writeText(link);
+            ok.textContent = "Copied!";
+            setTimeout(()=> ok.textContent = "", 2000);
+          } catch {
+            ok.textContent = link; // fallback: show link to copy manually
+          }
+        });
+
+        row.appendChild(copyBtn);
+        row.appendChild(ok);
+
+        card.appendChild(title);
+        card.appendChild(meta);
+        card.appendChild(row);
+        grid.appendChild(card);
+      });
+
+      sec.appendChild(grid);
+      return sec;
+    }
+
+    function niceName(p){ return p.split("/").pop().replace(/[-_]+/g," ").replace(/\.pdf$/i,""); }
+
+    fetch(API).then(r => r.json()).then(data => {
+      if (!data.tree) {
+        content.innerHTML = `<div class="muted">No files found.</div>`;
+        return;
+      }
       const pdfs = data.tree
         .filter(n => n.type === "blob" && /\.pdf$/i.test(n.path))
         .map(n => ({
           path: n.path,
-          url: `${location.origin}/${REPO}/${n.path}`, // works on GitHub Pages
-          name: niceName(n.path),
-          folder: n.path.includes('/') ? n.path.substring(0, n.path.lastIndexOf('/')) : ''
+          url:  `${BASE}/${encodeURI(n.path)}`,
+          name: niceName(n.path)
         }))
         .sort((a,b) => a.path.localeCompare(b.path));
 
-      status.textContent = `${pdfs.length} PDF(s)`;
-      const frag = document.createDocumentFragment();
-      pdfs.forEach(f => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a href="${f.url}" target="_blank" rel="noopener">${f.name}</a>
-          <div class="muted">${f.path}</div>
-        `;
-        frag.appendChild(li);
-      });
-      list.appendChild(frag);
+      countEl.textContent = pdfs.length.toString();
 
-      // simple filter
-      document.getElementById('q').addEventListener('input', e => {
+      // Group by folder and render
+      const groups = groupByFolder(pdfs);
+      const frag = document.createDocumentFragment();
+      [...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([folder, files]) => {
+        frag.appendChild(createSection(folder, files));
+      });
+      content.appendChild(frag);
+
+      // Live filter
+      const q = document.getElementById("q");
+      q.addEventListener("input", e => {
         const term = e.target.value.toLowerCase();
-        [...list.children].forEach(li => {
-          li.style.display = li.textContent.toLowerCase().includes(term) ? "" : "none";
+        const cards = content.querySelectorAll(".file");
+        cards.forEach(c => {
+          c.style.display = c.textContent.toLowerCase().includes(term) ? "" : "none";
         });
       });
     }).catch(err => {
-      document.getElementById('status').textContent = "Error loading file list.";
       console.error(err);
+      content.innerHTML = `<div class="muted">Error loading file list. Try reloading in a moment.</div>`;
     });
   </script>
 </body>
