@@ -4,160 +4,852 @@
   <meta charset="utf-8" />
   <title>WigWag Training — Manuals</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- ==== THEME: tweak these to match wigwagtraining.com ==== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --bg:#0f1115;          /* page background */
-      --panel:#151923;       /* cards / sections */
-      --panel-2:#10131b;     /* header/search bar bg */
-      --text:#eef2ff;        /* primary text */
-      --muted:#aab1c5;       /* secondary text */
-      --brand:#22c55e;       /* accent / buttons */
-      --brand-2:#16a34a;     /* button hover */
-      --link:#93c5fd;        /* links */
-      --border:#1f2431;      /* subtle borders */
-      --radius:16px;
+    /* ── CSS Variables ── */
+    :root {
+      --bg: #09090b;
+      --card: #111113;
+      --card-hover: #18181b;
+      --border: #27272a;
+      --text: #fafafa;
+      --muted: #a1a1aa;
+      --accent: #22c55e;
+      --accent-hover: #16a34a;
+      --accent-dim: rgba(34,197,94,0.12);
+      --accent-dimmer: rgba(34,197,94,0.06);
+      --link: #86efac;
+      --radius-sm: 10px;
+      --radius: 16px;
+      --radius-lg: 20px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
     }
-    @media (prefers-color-scheme: light){
-      :root{
-        --bg:#f7f8fb; --panel:#ffffff; --panel-2:#ffffff;
-        --text:#0f172a; --muted:#475569; --link:#1d4ed8;
-        --border:#e5e7eb; --brand:#16a34a; --brand-2:#15803d;
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #fafafa;
+        --card: #ffffff;
+        --card-hover: #f4f4f5;
+        --border: #e4e4e7;
+        --text: #09090b;
+        --muted: #71717a;
+        --accent: #16a34a;
+        --accent-hover: #15803d;
+        --accent-dim: rgba(22,163,74,0.1);
+        --accent-dimmer: rgba(22,163,74,0.05);
+        --link: #15803d;
+        --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-lg: 0 4px 16px rgba(0,0,0,0.1);
       }
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1100px;margin:0 auto;padding:32px 16px}
-    header{display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .brand img{height:40px;width:auto;border-radius:8px}
-    h1{font-size:clamp(20px,3vw,28px);margin:0}
-    .top-links a{color:var(--link);text-decoration:none;font-weight:600}
-    .card{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px}
-    .search{display:flex;gap:10px;align-items:center;margin:14px 0}
-    .search input{flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:var(--text)}
-    .search .toggle{display:flex;gap:8px;align-items:center}
-    .pill{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:14px}
-    .muted{color:var(--muted)}
-    .section{margin-top:22px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-    .section h2{margin:0;padding:12px 16px;background:var(--panel);font-size:16px;border-bottom:1px solid var(--border)}
-    .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:12px}
-    .file{display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px}
-    .file a{color:var(--text);text-decoration:none;font-weight:600}
-    .file small{color:var(--muted)}
-    .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
-    .btn{cursor:pointer;border:none;border-radius:10px;padding:8px 10px;background:var(--brand);color:white;font-weight:600}
-    .btn:hover{background:var(--brand-2)}
-    .copy-ok{font-size:12px;color:var(--muted)}
-    footer{margin:32px 0 12px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Geist', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 85%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .header-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    .header-link:hover {
+      color: var(--text);
+      border-color: var(--muted);
+      background: var(--card-hover);
+    }
+
+    /* ── Page wrap ── */
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 4px 12px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Search card ── */
+    .search-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 40px;
+    }
+    .search-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-icon-wrap {
+      position: relative;
+      flex: 1;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .count-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--accent-dimmer);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .search-tip {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      padding-left: 2px;
+    }
+    .search-tip code {
+      font-size: 12px;
+      background: var(--accent-dimmer);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 5px;
+      color: var(--accent);
+    }
+
+    /* ── Empty / loading states ── */
+    .state-msg {
+      text-align: center;
+      padding: 64px 24px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .state-msg .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Folder sections ── */
+    .folder-section {
+      margin-bottom: 28px;
+    }
+    .folder-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .folder-label {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .folder-divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .folder-count {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 10px;
+    }
+
+    /* ── File grid ── */
+    .files-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+    }
+
+    /* ── File card ── */
+    .file-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .file-card:hover {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+      background: var(--card-hover);
+      box-shadow: var(--shadow-lg);
+    }
+    .file-card-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .file-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--accent-dim);
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      line-height: 1.35;
+      word-break: break-word;
+      transition: color 0.15s;
+    }
+    .file-name:hover { color: var(--accent); }
+    .file-path {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-card-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .btn-copy {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      background: var(--accent);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-copy:hover { background: var(--accent-hover); }
+    .btn-copy:active { transform: scale(0.97); }
+    .copy-ok {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ── No results ── */
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    /* ── Upload button ── */
+    .btn-upload {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      font-family: inherit;
+    }
+    .btn-upload:hover { background: var(--accent-hover); }
+    .btn-upload:active { transform: scale(0.97); }
+
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 480px;
+      padding: 28px;
+      animation: modal-in 0.18s ease;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .modal-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+    .modal-sub a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .modal-sub a:hover { text-decoration: underline; }
+    .field {
+      margin-bottom: 16px;
+    }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .field-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+    .modal-input, .modal-select {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .modal-input::placeholder { color: var(--muted); }
+    .modal-input:focus, .modal-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .modal-select option { background: var(--card); }
+    .file-drop {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--bg);
+      position: relative;
+    }
+    .file-drop:hover, .file-drop.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-dimmer);
+    }
+    .file-drop input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .file-drop-icon { font-size: 28px; margin-bottom: 8px; }
+    .file-drop-text { font-size: 14px; font-weight: 500; color: var(--text); }
+    .file-drop-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .file-chosen {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+      display: none;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .btn-cancel {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-cancel:hover { background: var(--card-hover); color: var(--text); }
+    .btn-submit {
+      flex: 2;
+      padding: 10px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .upload-status {
+      margin-top: 14px;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 500;
+      display: none;
+    }
+    .upload-status.error { color: #f87171; display: block; }
+    .upload-status.success { color: var(--accent); display: block; }
+    .upload-status.loading { color: var(--muted); display: block; }
+    .btn-submit .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    .btn-submit.uploading .btn-spinner { display: inline-block; }
+    .btn-submit.uploading .btn-label { display: none; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <!-- Optional logo: replace src with your logo URL or remove this <img> -->
-        <!-- <img src="https://wigwagtraining.com/path-to-your-logo.png" alt="WigWag logo"> -->
-        <h1>WigWag Training — Manuals</h1>
-      </div>
-      <div class="top-links">
-        <a href="https://wigwagtraining.com" target="_blank" rel="noopener">Back to wigwagtraining.com →</a>
-      </div>
-    </header>
 
-    <div class="card">
-      <div class="search">
-        <input id="q" type="search" placeholder="Search manuals by name or folder…" autocomplete="off" />
-        <span class="pill"><span id="count">0</span> PDFs</span>
+  <!-- ── Header ── -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">📄</div>
+        <span class="brand-name">WigWag Training</span>
       </div>
-      <div class="muted" style="padding-inline:2px">
-        Tip: Use the “Copy link” button to copy a link with <code>#page=…</code> (we’ll ask for a page number).
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button class="btn-upload" id="open-upload">
+          ＋ Add PDF
+        </button>
+        <a class="header-link" href="https://wigwagtraining.com" target="_blank" rel="noopener">
+          wigwagtraining.com ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Upload Modal ── -->
+  <div class="modal-overlay" id="upload-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-title" id="modal-title">📤 Upload a PDF</div>
+      <p class="modal-sub">
+        Uploads commit directly to the <strong>main</strong> branch via the GitHub API.
+        Requires a GitHub Personal Access Token with <code style="font-size:11px;background:var(--accent-dimmer);border:1px solid var(--border);border-radius:4px;padding:1px 4px;color:var(--accent)">contents:write</code> permission.
+        Your token is saved locally in your browser only.
+        <a href="https://github.com/settings/tokens/new?scopes=repo&description=Manuals+Upload" target="_blank" rel="noopener">Generate a token ↗</a>
+      </p>
+
+      <div class="field">
+        <label for="m-token">GitHub Token</label>
+        <input id="m-token" class="modal-input" type="password" placeholder="ghp_…" autocomplete="off" />
+        <div class="field-note">Stored in localStorage — never sent anywhere except GitHub's API.</div>
+      </div>
+
+      <div class="field">
+        <label for="m-folder">Destination Folder</label>
+        <select id="m-folder" class="modal-select">
+          <option value="">Loading folders…</option>
+        </select>
+      </div>
+
+      <div class="field" id="new-folder-field" style="display:none">
+        <label for="m-newfolder">New Folder Name</label>
+        <input id="m-newfolder" class="modal-input" type="text" placeholder="e.g. YWG New Equipment Documents" />
+      </div>
+
+      <div class="field">
+        <label>PDF File</label>
+        <div class="file-drop" id="file-drop">
+          <input type="file" id="m-file" accept=".pdf,application/pdf" />
+          <div class="file-drop-icon">📄</div>
+          <div class="file-drop-text">Click or drag a PDF here</div>
+          <div class="file-drop-hint">PDF files only · max 25 MB</div>
+        </div>
+        <div class="file-chosen" id="file-chosen"></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" id="close-upload">Cancel</button>
+        <button class="btn-submit" id="do-upload" disabled>
+          <span class="btn-spinner"></span>
+          <span class="btn-label">Upload PDF</span>
+        </button>
+      </div>
+
+      <div class="upload-status" id="upload-status"></div>
+    </div>
+  </div>
+
+  <!-- ── Main ── -->
+  <main class="wrap">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">📚 Equipment Manuals</div>
+      <h1>Find Your Manual</h1>
+      <p class="hero-sub">Browse and copy direct PDF links for all YWG equipment manuals — with page-level deep linking.</p>
+    </div>
+
+    <!-- Search -->
+    <div class="search-card">
+      <div class="search-row">
+        <div class="search-icon-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="q" class="search-input" type="search" placeholder="Search manuals by name or folder…" autocomplete="off" />
+        </div>
+        <div class="count-pill">
+          <span id="count">0</span> PDFs
+        </div>
+      </div>
+      <p class="search-tip">
+        Tip: Use <strong>Copy link</strong> to get a URL with <code>#page=…</code> — you'll be prompted for a page number.
+      </p>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+      <div class="state-msg" id="loading">
+        <div class="spinner"></div>
+        <div>Loading manuals…</div>
       </div>
     </div>
 
-    <div id="content"></div>
+    <div class="no-results" id="no-results">No manuals match your search.</div>
 
-    <footer>© <span id="year"></span> WigWag Training</footer>
-  </div>
+    <!-- Footer -->
+    <footer>
+      <p>© <span id="year"></span> <a href="https://wigwagtraining.com" target="_blank" rel="noopener">WigWag Training</a></p>
+    </footer>
+
+  </main>
 
   <script>
     // ====== EDIT THESE ======
     const OWNER  = "WigWag Training";
     const REPO   = "Manuals";
-    const BRANCH = "main"; // change to "master" if needed
+    const BRANCH = "main";
     // ========================
 
     const API  = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
     const BASE = location.origin + location.pathname.replace(/\/$/, "");
 
-    const content = document.getElementById("content");
-    const countEl = document.getElementById("count");
-    const yearEl  = document.getElementById("year");
+    const contentEl  = document.getElementById("content");
+    const countEl    = document.getElementById("count");
+    const loadingEl  = document.getElementById("loading");
+    const noResults  = document.getElementById("no-results");
+    const yearEl     = document.getElementById("year");
     yearEl.textContent = new Date().getFullYear();
+
+    // Folder color palette (matches reference site stages)
+    const FOLDER_COLORS = [
+      "#22c55e","#3b82f6","#f59e0b","#8b5cf6",
+      "#14b8a6","#f97316","#ec4899","#6366f1",
+      "#06b6d4","#84cc16","#ef4444","#a855f7"
+    ];
+
+    function folderColor(idx) {
+      return FOLDER_COLORS[idx % FOLDER_COLORS.length];
+    }
 
     function groupByFolder(paths) {
       const map = new Map();
       for (const f of paths) {
-        const folder = f.path.includes("/") ? f.path.split("/").slice(0, -1).join("/") : "(root)";
+        const folder = f.path.includes("/") ? f.path.split("/").slice(0,-1).join("/") : "(root)";
         if (!map.has(folder)) map.set(folder, []);
         map.get(folder).push(f);
       }
       return map;
     }
 
-    function createSection(folder, files) {
-      const sec = document.createElement("section");
-      sec.className = "section";
-      const h2 = document.createElement("h2");
-      h2.textContent = folder;
-      sec.appendChild(h2);
+    function niceName(p) {
+      return p.split("/").pop().replace(/[-_]+/g," ").replace(/\.pdf$/i,"").trim();
+    }
 
+    function niceFolder(folder) {
+      if (folder === "(root)") return "General";
+      return folder.split("/").pop().replace(/[-_]+/g," ");
+    }
+
+    function createSection(folder, files, colorIdx) {
+      const color = folderColor(colorIdx);
+      const sec = document.createElement("div");
+      sec.className = "folder-section";
+      sec.dataset.folder = folder;
+
+      // Folder header
+      const header = document.createElement("div");
+      header.className = "folder-header";
+
+      const label = document.createElement("span");
+      label.className = "folder-label";
+      label.style.color = color;
+      label.textContent = niceFolder(folder);
+
+      const divider = document.createElement("div");
+      divider.className = "folder-divider";
+
+      const countBadge = document.createElement("span");
+      countBadge.className = "folder-count";
+      countBadge.textContent = files.length + (files.length === 1 ? " file" : " files");
+
+      header.appendChild(label);
+      header.appendChild(divider);
+      header.appendChild(countBadge);
+      sec.appendChild(header);
+
+      // Grid
       const grid = document.createElement("div");
-      grid.className = "files";
+      grid.className = "files-grid";
 
       files.forEach(file => {
         const card = document.createElement("div");
-        card.className = "file";
+        card.className = "file-card";
+        card.dataset.text = (file.name + " " + file.path).toLowerCase();
 
-        const title = document.createElement("a");
-        title.href = file.url;
-        title.target = "_blank";
-        title.rel = "noopener";
-        title.textContent = file.name;
+        const top = document.createElement("div");
+        top.className = "file-card-top";
 
-        const meta = document.createElement("small");
-        meta.textContent = file.path;
+        const icon = document.createElement("div");
+        icon.className = "file-icon";
+        icon.style.background = `${color}1a`;
+        icon.style.borderColor = `${color}50`;
+        icon.textContent = "📄";
 
-        const row = document.createElement("div");
-        row.className = "row";
+        const info = document.createElement("div");
+        info.className = "file-info";
+
+        const link = document.createElement("a");
+        link.className = "file-name";
+        link.href = file.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = file.name;
+
+        const path = document.createElement("span");
+        path.className = "file-path";
+        path.textContent = file.path;
+
+        info.appendChild(link);
+        info.appendChild(path);
+        top.appendChild(icon);
+        top.appendChild(info);
+
+        const bottom = document.createElement("div");
+        bottom.className = "file-card-bottom";
 
         const copyBtn = document.createElement("button");
-        copyBtn.className = "btn";
-        copyBtn.textContent = "Copy link";
+        copyBtn.className = "btn-copy";
+        copyBtn.style.background = color;
+        copyBtn.innerHTML = `<span>🔗</span> Copy link`;
+        copyBtn.addEventListener("mouseenter", () => {
+          copyBtn.style.filter = "brightness(0.88)";
+        });
+        copyBtn.addEventListener("mouseleave", () => {
+          copyBtn.style.filter = "";
+        });
+
         const ok = document.createElement("span");
         ok.className = "copy-ok";
-        ok.textContent = "";
 
         copyBtn.addEventListener("click", async () => {
           const p = prompt("Page number to jump to?", "2");
           if (!p) return;
-          const cacheBust = new Date().toISOString().slice(0,10); // YYYY-MM-DD
-          const link = `${file.url}?v=${cacheBust}#page=${encodeURIComponent(p)}&view=FitH`;
+          const cacheBust = new Date().toISOString().slice(0,10);
+          const linkUrl = `${file.url}?v=${cacheBust}#page=${encodeURIComponent(p)}&view=FitH`;
           try {
-            await navigator.clipboard.writeText(link);
-            ok.textContent = "Copied!";
-            setTimeout(()=> ok.textContent = "", 2000);
+            await navigator.clipboard.writeText(linkUrl);
+            ok.textContent = "✓ Copied!";
+            setTimeout(() => ok.textContent = "", 2200);
           } catch {
-            ok.textContent = link; // fallback: show link to copy manually
+            ok.textContent = linkUrl;
           }
         });
 
-        row.appendChild(copyBtn);
-        row.appendChild(ok);
+        bottom.appendChild(copyBtn);
+        bottom.appendChild(ok);
 
-        card.appendChild(title);
-        card.appendChild(meta);
-        card.appendChild(row);
+        card.appendChild(top);
+        card.appendChild(bottom);
         grid.appendChild(card);
       });
 
@@ -165,45 +857,238 @@
       return sec;
     }
 
-    function niceName(p){ return p.split("/").pop().replace(/[-_]+/g," ").replace(/\.pdf$/i,""); }
-
     fetch(API).then(r => r.json()).then(data => {
+      loadingEl.remove();
+
       if (!data.tree) {
-        content.innerHTML = `<div class="muted">No files found.</div>`;
+        contentEl.innerHTML = `<div class="state-msg">No files found.</div>`;
         return;
       }
+
       const pdfs = data.tree
         .filter(n => n.type === "blob" && /\.pdf$/i.test(n.path))
         .map(n => ({
           path: n.path,
-          url:  `${BASE}/${encodeURI(n.path)}`,
+          url: `${BASE}/${encodeURI(n.path)}`,
           name: niceName(n.path)
         }))
         .sort((a,b) => a.path.localeCompare(b.path));
 
-      countEl.textContent = pdfs.length.toString();
+      countEl.textContent = pdfs.length;
 
-      // Group by folder and render
       const groups = groupByFolder(pdfs);
       const frag = document.createDocumentFragment();
-      [...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0])).forEach(([folder, files]) => {
-        frag.appendChild(createSection(folder, files));
-      });
-      content.appendChild(frag);
+      let colorIdx = 0;
+      [...groups.entries()]
+        .sort((a,b) => a[0].localeCompare(b[0]))
+        .forEach(([folder, files]) => {
+          frag.appendChild(createSection(folder, files, colorIdx++));
+        });
+      contentEl.appendChild(frag);
 
       // Live filter
       const q = document.getElementById("q");
       q.addEventListener("input", e => {
-        const term = e.target.value.toLowerCase();
-        const cards = content.querySelectorAll(".file");
-        cards.forEach(c => {
-          c.style.display = c.textContent.toLowerCase().includes(term) ? "" : "none";
+        const term = e.target.value.toLowerCase().trim();
+        let visibleCount = 0;
+
+        contentEl.querySelectorAll(".file-card").forEach(c => {
+          const match = !term || c.dataset.text.includes(term);
+          c.style.display = match ? "" : "none";
+          if (match) visibleCount++;
         });
+
+        // Hide empty folder sections
+        contentEl.querySelectorAll(".folder-section").forEach(sec => {
+          const hasVisible = [...sec.querySelectorAll(".file-card")].some(c => c.style.display !== "none");
+          sec.style.display = hasVisible ? "" : "none";
+        });
+
+        noResults.style.display = (term && visibleCount === 0) ? "block" : "none";
       });
+
     }).catch(err => {
       console.error(err);
-      content.innerHTML = `<div class="muted">Error loading file list. Try reloading in a moment.</div>`;
+      if (loadingEl) loadingEl.remove();
+      contentEl.innerHTML = `<div class="state-msg">Error loading manuals. Please reload in a moment.</div>`;
     });
+
+    // ── Upload Modal ──────────────────────────────────────────────
+    const modal       = document.getElementById("upload-modal");
+    const openBtn     = document.getElementById("open-upload");
+    const closeBtn    = document.getElementById("close-upload");
+    const tokenInput  = document.getElementById("m-token");
+    const folderSel   = document.getElementById("m-folder");
+    const newFolderFd = document.getElementById("new-folder-field");
+    const newFolderIn = document.getElementById("m-newfolder");
+    const fileInput   = document.getElementById("m-file");
+    const fileDrop    = document.getElementById("file-drop");
+    const fileChosen  = document.getElementById("file-chosen");
+    const doUpload    = document.getElementById("do-upload");
+    const statusEl    = document.getElementById("upload-status");
+
+    // Restore saved token
+    tokenInput.value = localStorage.getItem("gh_pat") || "";
+
+    // Open / close
+    openBtn.addEventListener("click", () => {
+      populateFolders();
+      modal.classList.add("open");
+      statusEl.className = "upload-status";
+      statusEl.textContent = "";
+      checkReady();
+    });
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+    function closeModal() {
+      modal.classList.remove("open");
+    }
+
+    // Populate folder dropdown from already-loaded sections
+    function populateFolders() {
+      const sections = [...contentEl.querySelectorAll(".folder-section")];
+      const existing = sections.map(s => s.dataset.folder).filter(Boolean);
+      folderSel.innerHTML =
+        existing.map(f => `<option value="${escAttr(f)}">${escAttr(niceFolder(f))} (${escAttr(f)})</option>`).join("") +
+        `<option value="__new__">➕ Create new folder…</option>`;
+      folderSel.value = existing[0] || "__new__";
+      toggleNewFolder();
+    }
+
+    function escAttr(s) { return s.replace(/"/g,"&quot;"); }
+
+    folderSel.addEventListener("change", toggleNewFolder);
+    function toggleNewFolder() {
+      const isNew = folderSel.value === "__new__";
+      newFolderFd.style.display = isNew ? "" : "none";
+    }
+
+    // File pick / drag
+    fileInput.addEventListener("change", () => {
+      const f = fileInput.files[0];
+      if (f) {
+        fileChosen.textContent = `✓ ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
+        fileChosen.style.display = "block";
+      }
+      checkReady();
+    });
+    fileDrop.addEventListener("dragover", e => { e.preventDefault(); fileDrop.classList.add("drag-over"); });
+    fileDrop.addEventListener("dragleave", () => fileDrop.classList.remove("drag-over"));
+    fileDrop.addEventListener("drop", e => {
+      e.preventDefault();
+      fileDrop.classList.remove("drag-over");
+      const f = e.dataTransfer.files[0];
+      if (f && /\.pdf$/i.test(f.name)) {
+        // Assign to the file input via DataTransfer
+        const dt = new DataTransfer();
+        dt.items.add(f);
+        fileInput.files = dt.files;
+        fileChosen.textContent = `✓ ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`;
+        fileChosen.style.display = "block";
+        checkReady();
+      }
+    });
+    tokenInput.addEventListener("input", checkReady);
+    newFolderIn.addEventListener("input", checkReady);
+
+    function checkReady() {
+      const hasToken = tokenInput.value.trim().length > 0;
+      const hasFile  = fileInput.files && fileInput.files.length > 0;
+      const isNew    = folderSel.value === "__new__";
+      const hasNewName = newFolderIn.value.trim().length > 0;
+      doUpload.disabled = !(hasToken && hasFile && (!isNew || hasNewName));
+    }
+
+    // Upload
+    doUpload.addEventListener("click", async () => {
+      const token = tokenInput.value.trim();
+      const file  = fileInput.files[0];
+      if (!token || !file) return;
+
+      const folder = folderSel.value === "__new__"
+        ? newFolderIn.value.trim()
+        : folderSel.value;
+      const repoPath = `${folder}/${file.name}`;
+
+      // Save token
+      localStorage.setItem("gh_pat", token);
+
+      // UI: loading state
+      doUpload.classList.add("uploading");
+      doUpload.disabled = true;
+      setStatus("loading", "Uploading…");
+
+      try {
+        // Convert file to base64
+        const base64 = await toBase64(file);
+
+        // Check if file already exists (to get its SHA for update)
+        const checkUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encodeURIComponent(repoPath)}`;
+        const checkRes = await fetch(checkUrl, { headers: authHeaders(token) });
+        let sha;
+        if (checkRes.ok) {
+          const existing = await checkRes.json();
+          sha = existing.sha;
+        }
+
+        // PUT to create or update
+        const body = {
+          message: `Add ${file.name} via web upload`,
+          content: base64,
+          branch: BRANCH,
+        };
+        if (sha) body.sha = sha;
+
+        const putRes = await fetch(checkUrl, {
+          method: "PUT",
+          headers: { ...authHeaders(token), "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+
+        if (!putRes.ok) {
+          const err = await putRes.json().catch(() => ({}));
+          throw new Error(err.message || `HTTP ${putRes.status}`);
+        }
+
+        setStatus("success", `✓ "${file.name}" uploaded successfully! Reload the page to see it.`);
+        fileInput.value = "";
+        fileChosen.style.display = "none";
+        fileChosen.textContent = "";
+
+      } catch (err) {
+        setStatus("error", `✗ Upload failed: ${err.message}`);
+      } finally {
+        doUpload.classList.remove("uploading");
+        checkReady();
+      }
+    });
+
+    function authHeaders(token) {
+      return {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      };
+    }
+
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // result is "data:application/pdf;base64,XXXX" — strip the prefix
+          resolve(reader.result.split(",")[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function setStatus(type, msg) {
+      statusEl.className = `upload-status ${type}`;
+      statusEl.textContent = msg;
+    }
   </script>
 </body>
 </html>
